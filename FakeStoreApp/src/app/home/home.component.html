@@ -1,1 +1,104 @@
-<p>home works!</p>
+<div class="controls">
+    <button class="btn primary" (click)="loadLimitedProducts(5)">Load 5 Products</button>
+    <button class="btn primary" (click)="showAddProductForm()">Add New Product</button>
+    
+    <select class="select" (change)="sortProducts($event)">
+        <option value="" selected>Sort by Price</option>
+        <option value="lowToHigh">Low to High</option>
+        <option value="highToLow">High to Low</option>
+    </select>
+    
+    <select class="select" (change)="filterByCategory($event)">
+        <option value="" selected>Filter by Category</option>
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+    </select>      
+</div>
+
+<div *ngIf="addingProduct" class="add-product-form">
+    <h3>Add New Product</h3>
+    <form (ngSubmit)="addProduct()">
+        <label for="title">Title:</label>
+        <input id="title" [(ngModel)]="newProduct.title" name="title" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description" [(ngModel)]="newProduct.description" name="description" required></textarea>
+
+        <label for="price">Price:</label>
+        <input id="price" type="number" [(ngModel)]="newProduct.price" name="price" required>
+
+        <label for="category">Category:</label>
+        <input id="category" [(ngModel)]="newProduct.category" name="category" required>
+
+        <label for="image">Image URL:</label>
+        <input id="image" [(ngModel)]="newProduct.image" name="image" required>
+
+        <div class="form-actions">
+            <button type="submit" class="btn primary">Add Product</button>
+            <button type="button" class="btn secondary" (click)="cancelAdd()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<div *ngIf="editingProduct" class="edit-product-form">
+    <h3>Edit Product</h3>
+    <form (ngSubmit)="updateProduct()">
+        <label for="title">Title:</label>
+        <input id="title" [(ngModel)]="editingProduct.title" name="title" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description" [(ngModel)]="editingProduct.description" name="description" required></textarea>
+
+        <label for="price">Price:</label>
+        <input id="price" type="number" [(ngModel)]="editingProduct.price" name="price" required>
+
+        <label for="category">Category:</label>
+        <input id="category" [(ngModel)]="editingProduct.category" name="category" required>
+
+        <label for="image">Image URL:</label>
+        <input id="image" [(ngModel)]="editingProduct.image" name="image" required>
+
+        <div class="form-actions">
+            <button type="submit" class="btn primary">Update Product</button>
+            <button type="button" class="btn secondary" (click)="cancelEdit()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<div *ngIf="selectedProduct" class="product-details">
+    <h3>Product Details</h3>
+    <div class="details-content">
+        <img [src]="selectedProduct.image" alt="{{ selectedProduct.title }}" class="product-image">
+        <h2>{{ selectedProduct.title }}</h2>
+        <p>{{ selectedProduct.description }}</p>
+        <p><strong>Price:</strong> ${{ selectedProduct.price }}</p>
+        <p><strong>Category:</strong> {{ selectedProduct.category }}</p>
+        <p><strong>Rating:</strong> {{ selectedProduct.rating.rate }} ({{ selectedProduct.rating.count }} reviews)</p>
+        <button class="btn secondary" (click)="closeDetails()">Close</button>
+    </div>
+</div>
+
+<div *ngIf="products.length > 0; else loading" class="product-grid">
+    <div *ngFor="let product of products" class="product-card">
+        <div class="image-container">
+            <img [src]="product.image" alt="{{ product.title }}" class="product-image">
+        </div>
+        <h2 class="product-title">{{ product.title }}</h2>
+        <p class="product-description">{{ product.description }}</p>
+        <p class="product-price">$ {{ product.price }}</p>
+        <p class="product-category">{{ product.category }}</p>
+        <div class="rating">
+            <span class="rating-value">{{ product.rating.rate }}</span>
+            <span class="rating-count">({{ product.rating.count }} reviews)</span>
+        </div>
+        <div class="actions">
+            <button class="btn primary">Add to Cart</button>
+            <button class="btn secondary" (click)="getProductDetails(product.id)">View Details</button>
+            <button class="btn danger" (click)="deleteProduct(product.id)">Delete</button>
+            <button class="btn tertiary" (click)="editProduct(product)">Edit</button>
+        </div>
+    </div>
+</div>
+
+<ng-template #loading>
+    <p>Loading products...</p>
+</ng-template>
